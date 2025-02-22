@@ -1,0 +1,8 @@
+model PropertyPhoto {
+    image_id String @id @default(uuid())
+
+    upload_image_id String
+
+    property_id String
+    property    Property @relation(fields: [property_id], references: [property_id])
+}

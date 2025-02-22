@@ -1,0 +1,10 @@
+model Email {
+    email_id              String  @id @default(uuid())
+    email                 String  @unique @db.Text
+    user                  User    @relation(fields: [user_id], references: [user_id])
+    user_id               String  @unique
+    emailVerificationCode String? @db.Text
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+}

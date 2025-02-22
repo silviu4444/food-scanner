@@ -1,0 +1,17 @@
+model User {
+    user_id    String  @id @default(uuid())
+    email      Email?
+    first_name String  @db.Text
+    last_name  String  @db.Text
+    picture    String? @db.Text
+    password   String? @db.Text
+
+    user_role_id String
+    role         UserRole @relation(fields: [user_role_id], references: [user_role_id])
+
+    properties Property[]
+    phone_numbers PhoneNumber[]
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+}

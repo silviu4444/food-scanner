@@ -1,0 +1,12 @@
+enum UserRoleEnum {
+    ADMIN
+    MODERATOR
+    USER
+}
+
+model UserRole {
+    user_role_id String       @id @default(uuid())
+    role         UserRoleEnum
+
+    users User[]
+}

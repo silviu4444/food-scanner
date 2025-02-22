@@ -1,0 +1,225 @@
+enum RelationTypeEnum {
+    SELL
+    RENT
+}
+
+enum CurrencyTypeEnum {
+    EUR
+    RON
+    MDL
+    USD
+}
+
+model RelationType {
+    relation_type_id String           @id @default(uuid())
+    type             RelationTypeEnum
+    properties       Property[]
+}
+
+model PropertyPrice {
+    price_id String           @id @default(uuid())
+    amount   Int
+    currency CurrencyTypeEnum
+
+    properties Property[]
+}
+
+model MonthlyExpense {
+    monthly_expense_id String           @id @default(uuid())
+    amount             Int
+    currency           CurrencyTypeEnum
+
+    properties Property[]
+}
+
+enum ContactPreferenceEnum {
+    ALL
+    JUST_PHONE
+    JUST_CHAT
+}
+
+model ContactPreference {
+    contact_preference_id String                @id @default(uuid())
+    type                  ContactPreferenceEnum
+    properties            Property[]
+}
+
+enum PropertyTypeEnum {
+    APARTMENT
+    HOUSE
+}
+
+model PropertyType {
+    property_type_id String           @id @default(uuid())
+    type             PropertyTypeEnum
+
+    property_details PropertyDetails[]
+}
+
+enum PropertyConditionEnum {
+    GOOD
+    NEEDS_RESTRUCTURING
+}
+
+model PropertyCondition {
+    property_condition_id String                @id @default(uuid())
+    type                  PropertyConditionEnum
+
+    property_details PropertyDetails[]
+}
+
+model PropertyLocation {
+    property_location_id String                               @id @default(uuid())
+    location    Unsupported("geometry(Point, 4326)")
+
+    addresses PropertyAddress[]
+}
+
+model PropertyAddress {
+    property_address_id String @id @default(uuid())
+
+    property_details PropertyDetails[]
+
+    property_location_id String
+    location PropertyLocation @relation(fields: [property_location_id], references: [property_location_id])
+
+    residence_complex String?
+    street            String
+    street_number     String?
+    city              String
+    postal_code       String
+    country           String
+    county            String
+    floor             String
+}
+
+enum PropertyFurnitureEnum {
+    EQUIPPED_KITCHEN_AND_FURNISHED_HOUSE
+    EQUIPPED_KITCHEN_AND_UNFURNISHED_HOUSE
+    UNEQUIPPED_KITCHEN_AND_UNFURNISHED_HOUSE
+}
+
+model PropertyFurniture {
+    property_furniture_id String                @id @default(uuid())
+    type                  PropertyFurnitureEnum
+
+    property_details PropertyDetails[]
+}
+
+model PropertyCommodities {
+    property_commodities_id String @id @default(uuid())
+
+    property_details PropertyDetails[]
+
+    has_air_conditioning   Boolean
+    has_closet_in_the_wall Boolean
+    has_balcony            Boolean
+    has_cellar             Boolean
+    has_parking            Boolean
+    has_terrace            Boolean
+}
+
+model PropertyDetails {
+    property_details_id String     @id @default(uuid())
+    properties          Property[]
+
+    property_type_id String
+    property_type    PropertyType @relation(fields: [property_type_id], references: [property_type_id])
+
+    property_condition_id String
+    property_condition    PropertyCondition @relation(fields: [property_condition_id], references: [property_condition_id])
+
+    property_address_id String
+    address             PropertyAddress @relation(fields: [property_address_id], references: [property_address_id])
+
+    is_last_floor   Boolean
+    has_elevator    Boolean
+    surface         Int
+    roomNumber      Int
+    bathroom_number Int
+
+    property_furniture_id String
+    property_furniture    PropertyFurniture @relation(fields: [property_furniture_id], references: [property_furniture_id])
+
+    property_commodities_id String
+    property_commodities    PropertyCommodities @relation(fields: [property_commodities_id], references: [property_commodities_id])
+}
+
+model AgencyFee {
+    agency_fee_id String           @id @default(uuid())
+    amount        Int
+    currency      CurrencyTypeEnum
+
+    properties PropertyContractDetails[]
+}
+
+enum MinimumLeaseTermUnitEnum {
+    MONTHS
+    DAYS
+}
+
+model MinimumLeaseTerm {
+    minimum_lease_term_id String @id @default(uuid())
+
+    value     Int
+    term_type MinimumLeaseTermUnitEnum
+
+    property_contract_details PropertyContractDetails[]
+}
+
+model RentInAdvance {
+    rent_in_advance_id String           @id @default(uuid())
+    amount             Int
+    currency           CurrencyTypeEnum
+
+    property_contract_details PropertyContractDetails[]
+}
+
+model PropertyContractDetails {
+    property_contract_details_id String @id @default(uuid())
+
+    maximum_number_of_tenants Int?
+    pet_friendly              Boolean
+
+    agency_fee_id String
+    agency_fee    AgencyFee @relation(fields: [agency_fee_id], references: [agency_fee_id])
+
+    minimum_lease_term_id String
+    minimum_lease_term    MinimumLeaseTerm @relation(fields: [minimum_lease_term_id], references: [minimum_lease_term_id])
+
+    rent_in_advance_id String
+    rent_in_advance    RentInAdvance @relation(fields: [rent_in_advance_id], references: [rent_in_advance_id])
+
+    properties Property[]
+}
+
+model Property {
+    property_id String @id @default(uuid())
+
+    user_id String
+    user    User   @relation(fields: [user_id], references: [user_id])
+
+    relation_type_id String
+    relation_type    RelationType @relation(fields: [relation_type_id], references: [relation_type_id])
+
+    price_id String
+    price    PropertyPrice @relation(fields: [price_id], references: [price_id])
+
+    monthly_expense_id String
+    monthly_expenses   MonthlyExpense @relation(fields: [monthly_expense_id], references: [monthly_expense_id])
+    description        String?
+
+    contact_preference_id String
+    contact_preference    ContactPreference @relation(fields: [contact_preference_id], references: [contact_preference_id])
+
+    property_details_id String
+    property_details    PropertyDetails @relation(fields: [property_details_id], references: [property_details_id])
+
+    property_contract_details_id String
+    property_contract_details    PropertyContractDetails @relation(fields: [property_contract_details_id], references: [property_contract_details_id])
+
+    photos PropertyPhoto[]
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+}

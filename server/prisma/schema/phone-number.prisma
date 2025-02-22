@@ -1,0 +1,10 @@
+model PhoneNumber {
+    phone_number_id String @id @default(uuid())
+
+    country_code String
+    number       String
+    is_primary   Boolean
+
+    user_id String
+    user    User   @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+}
